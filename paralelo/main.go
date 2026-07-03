@@ -27,13 +27,17 @@ import (
 
 // gerarMatriz cria uma matriz N x N (row-major) com valores pseudoaleatórios,
 // idêntica à função usada na versão sequencial, para garantir reprodutibilidade.
-func gerarMatriz(n int, seed int64) []float64 {
+func gerarMatrizes(n int, seed int64) (a, b []float64) {
 	r := rand.New(rand.NewSource(seed))
-	m := make([]float64, n*n)
-	for i := range m {
-		m[i] = r.Float64()
+	a = make([]float64, n*n)
+	for i := range a {
+		a[i] = r.Float64()
 	}
-	return m
+	b = make([]float64, n*n)
+	for i := range b {
+		b[i] = r.Float64()
+	}
+	return
 }
 
 // checksum soma todos os elementos de C (mesma função da versão sequencial).
@@ -114,8 +118,7 @@ func main() {
 		fmt.Printf("Versão PARALELA (MPI, Mestre-Escravo) - N=%d, processos=%d, seed=%d\n", N, numProcessos, *seed)
 
 		// Geração das matrizes (fora da medição de tempo).
-		a := gerarMatriz(N, *seed)
-		b := gerarMatriz(N, *seed+1)
+		a, b := gerarMatrizes(N, *seed)
 
 		// --- Início da medição: distribuição + cálculo + coleta ---
 		inicio := time.Now()
